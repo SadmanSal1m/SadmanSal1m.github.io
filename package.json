@@ -1,0 +1,49 @@
+{
+  "name": "sadman-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "og": "python3 tools/og/build-og.py",
+    "media": "python3 tools/media/build-media.py",
+    "fiverr": "python3 tools/build-fiverr-images.py"
+  },
+  "dependencies": {
+    "@fontsource-variable/outfit": "^5.3.0",
+    "@gsap/react": "^2.1.2",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.7.0",
+    "gsap": "^3.15.0",
+    "matter-js": "^0.20.0",
+    "motion": "^12.43.0",
+    "next": "16.3.0",
+    "ogl": "^1.0.11",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@tailwindcss/postcss": "^4",
+    "@types/matter-js": "^0.20.2",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/three": "^0.185.3",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.0",
+    "linkinator": "^8.0.3",
+    "simple-icons": "^16.28.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
+  },
+  "packageManager": "pnpm@11.20.0"
+}

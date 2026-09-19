@@ -1,0 +1,82 @@
+import type { Project } from "./types";
+
+export const scamlens: Project = {
+  slug: "scamlens",
+  station: "Inspect",
+  index: "06",
+  name: "ScamLens",
+  title: "ScamLens Website",
+  promise: "A privacy first web application that analyses suspicious messages, emails, URLs and headers and explains the indicators it found, instead of producing a score.",
+  category: "Web application · security analysis · privacy",
+  role: "Product, rules engine, frontend and backend, end to end",
+  platform: "Web · Next.js · modular rules engine · analysis without saving",
+  tags: ["Explainable findings", "Modular rules engine", "URL and domain analysis", "Nothing saved by default", "AI enriches, rules decide"],
+  takeaway: "Relevant for security tooling, parsers, rules engines, privacy engineering and any product where explainability matters more than a number.",
+  heroShot: "scamlens/01-landing",
+  heroAlt: "ScamLens landing page: the headline Suspicious message? Inspect the evidence, a sample analysis card listing indicators with severities, and figures for the rules it checks.",
+  atAGlance: {
+    problem: "Phishing has convincing branding, good grammar and personalised details. Most people rely on intuition, and a tool that answers with 87 percent scam teaches them nothing about why.",
+    contribution: "The whole product: an input parser for text, email, URLs and raw headers, URL normalisation and domain analysis, email address and Reply-To checks, header authentication explanation, language pattern rules, a modular rules engine where each rule carries its evidence and a recommendation, explainable aggregation, a technical details view, and a privacy architecture that discards input by default.",
+    stack: ["Next.js", "TypeScript", "Rules engine", "URL and email parsing", "Unicode and punycode handling", "Schema validated outputs"],
+    proof: "Live at scamlens.sadman.tech: paste a message, an email, a URL or headers and get each indicator with its evidence; a public page lists every rule it checks.",
+  },
+  context: [
+    "ScamLens exists so that a non technical person can inspect the concrete signs of a scam: a link whose registered domain is not the brand it claims, a Reply-To that differs from the sender, artificial urgency, a request for credentials, a look alike character in a domain.",
+    "The rule that shaped it: evidence is more important than a score. Nothing is called safe because a model produced a low number; every finding shows the text it was based on.",
+  ],
+  challenge: [
+    "Suspicious input is hostile input. URLs have to be analysed without visiting them, so the service never becomes a proxy that fetches internal addresses on an attacker's behalf.",
+    "Input is private by nature. Message contents must not reach logs, analytics, databases or error reports unless the user explicitly chooses to save an analysis.",
+  ],
+  journey: [
+    { media: "scamlens/01-landing", alt: "ScamLens landing page with the headline Suspicious message? Inspect the evidence and a sample result listing indicators.", caption: "The pitch is the product: a sample analysis with severities and evidence, not a gauge." },
+    { media: "scamlens/02-analyzer", alt: "Analyzer page titled What did you receive? with Message, Email, URL and Headers tabs and a large text area.", caption: "One text area, four input modes. The notice under it says the analysis is not saved unless you choose to." },
+    { media: "scamlens/03-what-it-checks", alt: "What ScamLens checks page listing rules such as IP address instead of a domain, deceptive subdomain structure, look alike domain, each with a description and identifier.", caption: "Every rule is public: what it looks for, how it is identified, and its severity, so the analysis is inspectable end to end." },
+    { media: "scamlens/04-privacy", alt: "Privacy page titled What happens to what you paste, explaining that input is analysed in memory and discarded.", caption: "What happens to what you paste, in plain words: analysed, answered, discarded." },
+    { media: "scamlens/05-every-rule", alt: "Lower landing page with the heading Every rule, on the drawing and a table of rule identifiers and severities.", caption: "Every rule, on the drawing: the rule set is versioned so an old analysis can say which rules produced it." },
+  ],
+  built: [
+    { lane: "Parsing", items: ["Input parser: text, email, HTML, URLs, domains, addresses, raw headers", "URL normalisation into scheme, host, port, path, query", "Registrable domain extraction and subdomain structure", "Punycode and look alike character detection", "Visible link text versus real target comparison when HTML is supplied"] },
+    { lane: "Rules", items: ["Independent rule modules with id, severity, detector, evidence and recommendation", "Domain rules: IP literal, punycode, deceptive subdomains, look alikes, length", "Email rules: display name versus address, Reply-To mismatch", "Header rules: SPF, DKIM and DMARC results explained", "Language rules: urgency, threat, credential and payment requests, gift cards and crypto, secrecy"] },
+    { lane: "Results", items: ["Explainable aggregation: high confidence and other indicators, no unexplained score", "Cards per finding with the exact evidence", "Technical details view: hostname, registrable domain, protocol, port, punycode, IP literal", "Recommended actions in plain language", "Optional AI wording over the deterministic findings"] },
+    { lane: "Privacy", items: ["Analyse without saving as the default", "Content excluded from logs, analytics and error reports", "Explicit save for history", "Rule set versioning for reproducibility"] },
+  ],
+  decisions: [
+    { title: "Never visit the URL", body: "Version one analyses URLs statically. Fetching a user supplied address from the server would make ScamLens a proxy into anything the server can reach.", tradeoff: "No page content or redirect chain in the analysis; a future retrieval service would need to be isolated on its own." },
+    { title: "Rules are modules", body: "Each rule is a file with a detector, evidence and a recommendation. Adding a check does not touch the engine, and the public rule list is generated from the same modules.", tradeoff: "Discipline in keeping rules independent; cross rule reasoning lives in the aggregator, not in the rules." },
+    { title: "Discard by default", body: "The analysis endpoint returns findings and drops the input. Saving is a separate, explicit action.", tradeoff: "No history unless the user asks for it, which is the point." },
+  ],
+  underTheHood: "The interface posts to an analysis API. An input normaliser extracts URLs, domains, addresses and headers; the rules engine runs the domain, email and language modules over them; the aggregator groups findings by confidence; an optional AI layer rewrites the explanation without changing the findings; and the response returns with the input discarded.",
+  deepDetail: [
+    "Look alike detection compares registrable domains against common brand strings with character substitutions such as 1 for l and 0 for o, and reports it as an indicator, not proof.",
+    "Header analysis explains SPF, DKIM and DMARC results as pasted, and says plainly that pasted headers cannot be fully verified.",
+    "Each saved analysis records the rule set version that produced it.",
+  ],
+  gallery: [
+    { media: "scamlens/01-landing", alt: "ScamLens landing page.", caption: "The landing page." },
+    { media: "scamlens/02-analyzer", alt: "Analyzer page with input tabs.", caption: "The analyzer, four input modes." },
+    { media: "scamlens/03-what-it-checks", alt: "Public rule list.", caption: "The public rule list." },
+    { media: "scamlens/04-privacy", alt: "Privacy explanation page.", caption: "Privacy: what happens to what you paste." },
+    { media: "scamlens/05-every-rule", alt: "Rule table on the landing page.", caption: "Every rule, on the drawing." },
+  ],
+  quality: [
+    "Input is analysed in memory and discarded unless the user explicitly saves it; message contents never reach logs or analytics.",
+    "URLs are never fetched by the analysis server, which removes the SSRF surface entirely from version one.",
+    "Findings always carry the evidence text they were based on; the assessment states that no result can guarantee a message is legitimate.",
+    "The public What ScamLens checks page documents every rule and its severity.",
+  ],
+  proofNow: ["Live at scamlens.sadman.tech.", "ScamLens explains indicators; it does not declare anything safe."],
+  tech: [
+    { name: "Next.js + TypeScript", why: "Typed rule modules and results, one codebase for interface and API." },
+    { name: "Rules engine", why: "Independent detectors with evidence and recommendations, versioned as a set." },
+    { name: "URL and email parsing", why: "Registrable domains, punycode, headers and addresses handled as data, not regexes over prose." },
+    { name: "Schema validation", why: "Every result, including the optional AI wording, is checked before it reaches the interface." },
+  ],
+  enables: [
+    "Security and trust tools that explain rather than score.",
+    "Products that handle sensitive input without storing it.",
+    "Rule based systems that stay extensible as new patterns appear.",
+  ],
+  links: [{ label: "Open ScamLens", href: "https://scamlens.sadman.tech/", note: "Live application" }],
+  next: "incidentkit",
+};

@@ -1,0 +1,81 @@
+import type { Project } from "./types";
+
+export const policywatch: Project = {
+  slug: "policywatch",
+  station: "Watch",
+  index: "05",
+  name: "PolicyWatch",
+  title: "PolicyWatch Website",
+  promise: "A web application that watches policies, terms and pricing pages and shows exactly what changed, with the diff as the source of truth.",
+  category: "Web application · monitoring · background workers",
+  role: "Product, architecture, frontend, backend and workers, end to end",
+  platform: "Web · Next.js · PostgreSQL · job queue and worker",
+  tags: ["Scheduled fetching", "Content extraction and normalisation", "Section aware diffs", "SSRF protection", "AI explains, never replaces"],
+  takeaway: "Relevant for monitoring products, change tracking, background job systems, safe outbound fetching and diff heavy interfaces.",
+  heroShot: "policywatch/01-landing",
+  heroAlt: "PolicyWatch landing page: the headline Know when the fine print changes, a short explanation, two buttons, and a preview card showing a highlighted change in a terms of service page.",
+  atAGlance: {
+    problem: "Companies change privacy policies, terms, refund rules, pricing and API conditions all the time. A notice that says the terms were updated does not say what changed, and nobody rereads a ten thousand word document to find out.",
+    contribution: "The whole product: monitors with schedules, a fetch worker with strict outbound protection, content extraction that strips navigation and cookie banners, normalisation so timestamps do not trigger alerts, snapshots with content hashes, a section aware diff engine, change classification, notifications, and an optional AI summary that always sits beside the real diff.",
+    stack: ["Next.js", "TypeScript", "PostgreSQL", "Queue and worker", "Cheerio and Readability", "Diff engine", "Email notifications"],
+    proof: "Live at policywatch.sadman.tech: add a monitor for any public page, and the dashboard shows monitors, their health and their history as the worker captures versions.",
+  },
+  context: [
+    "PolicyWatch is for anyone who depends on a document they do not control: consumers watching subscription and cancellation terms, developers watching API terms and pricing, small companies watching suppliers, researchers keeping a history, compliance teams watching policies that apply to them.",
+    "The rule that shaped every decision: the diff is the truth and AI only explains it. A user can always open the original snapshots and the exact text differences; the summary is a convenience, clearly labelled as generated.",
+  ],
+  challenge: [
+    "Web pages are noisy. Navigation, cookie banners, footers, tracking code and generated timestamps change constantly without the policy changing. A naive comparison alerts every day; a careful one has to know what to ignore.",
+    "Users supply arbitrary URLs, which makes the fetcher a security surface. Loopback and private addresses, link local and metadata endpoints, non HTTP schemes and redirects into internal networks all have to be refused, at DNS resolution time as well as at the URL.",
+  ],
+  journey: [
+    { media: "policywatch/01-landing", alt: "PolicyWatch landing page with the headline Know when the fine print changes and a preview of a highlighted change in a terms document.", caption: "The promise in one line, and the product's core artefact, a highlighted change, shown before any sign up." },
+    { media: "policywatch/02-how-it-works", alt: "Lower landing page with three figures for what the system does and the line Three moves, then it just watches.", caption: "Three moves, then it just watches: add a monitor, choose a frequency, get told what changed." },
+    { media: "policywatch/03-monitors", alt: "Monitors page listing monitored documents with their status, last check and last change, including one with a broken URL flagged.", caption: "Monitors with their health: healthy, changed, or fetch failed, so a broken URL is a visible state rather than a silent gap." },
+    { media: "policywatch/04-add-monitor", alt: "Add monitor form with name, URL, category, check frequency and notification options.", caption: "Adding a monitor takes a name, a URL and a frequency; selectors to watch or ignore live under advanced settings." },
+  ],
+  built: [
+    { lane: "Monitoring", items: ["Monitors with name, URL, category, frequency and notification rules", "Scheduler that decides what is due and queues jobs", "Fetch worker with timeouts, size and redirect limits, MIME checks", "Monitor runs recorded with status, response code, error and duration"] },
+    { lane: "Change detection", items: ["Raw and normalised representations stored per snapshot", "HTML to structured text so headings become sections", "Normalisation: whitespace, scripts, styles, Unicode, ignored selectors", "Content hash short circuits unchanged pages", "Section aware diff with added, removed and modified blocks"] },
+    { lane: "Explanation", items: ["Change classification with an explainable importance", "Optional AI summary of the changed sections only, validated against a schema", "Inline and side by side comparison views", "Snapshot timeline: changed, no change, fetch failed"] },
+    { lane: "Platform", items: ["Authentication and per user monitors", "Email and in app notifications", "Retention settings", "Rate limits and request size limits"] },
+  ],
+  decisions: [
+    { title: "The diff is the truth", body: "AI receives only the changed sections and produces a summary that is labelled as generated and placed next to the exact diff. It never replaces the comparison.", tradeoff: "Some users want a one line answer; they get one, but the wording that matters is always one scroll away." },
+    { title: "Refuse before fetching", body: "URL validation, DNS resolution checks and redirect inspection happen before any request leaves the worker. Private, loopback, link local and metadata ranges are blocked, as are non HTTP schemes.", tradeoff: "A few legitimate but unusually hosted pages cannot be monitored; that is the right side of the line for a service that fetches on the user's behalf." },
+    { title: "Normalise, then hash, then diff", body: "Most checks end at the hash: the page did not change, so nothing else runs. Only real differences reach the diff engine and the optional summary.", tradeoff: "Normalisation rules need care so that a real change is never normalised away; ignored selectors are explicit and per monitor." },
+  ],
+  underTheHood: "The app is a Next.js interface and API over PostgreSQL. A scheduler places due monitors on a queue; a worker fetches the page through the protected client, extracts and normalises the content, hashes it, and only on a difference runs the section diff, classification, optional summary and notifications.",
+  deepDetail: [
+    "Snapshots keep both the sanitised raw content and the normalised text, so extraction problems can be debugged against what was actually downloaded.",
+    "Changes are linked to sections by heading, so a notification can say Cancellation changed rather than lines 827 to 836 changed.",
+    "Redirect targets are resolved and checked with the same rules as the original URL, so a safe domain redirecting to an internal address is rejected.",
+  ],
+  gallery: [
+    { media: "policywatch/01-landing", alt: "PolicyWatch landing page.", caption: "The landing page." },
+    { media: "policywatch/02-how-it-works", alt: "How PolicyWatch works, lower landing page.", caption: "How it works, in three moves." },
+    { media: "policywatch/03-monitors", alt: "Monitors page with statuses.", caption: "Monitors and their health states." },
+    { media: "policywatch/04-add-monitor", alt: "Add monitor form.", caption: "Adding a monitor." },
+  ],
+  quality: [
+    "Outbound fetching refuses private, loopback, link local and metadata addresses, non HTTP schemes and unsafe redirects, with DNS checked at resolution time.",
+    "Every AI summary is labelled as generated and validated against a schema before it is shown.",
+    "Message and page content is sanitised before rendering; no raw HTML from a monitored page reaches the browser.",
+    "Monitor runs record status, response code and duration, so failures are visible in the interface rather than lost in logs.",
+  ],
+  proofNow: ["Live at policywatch.sadman.tech.", "Monitoring is not legal advice, and the product says so."],
+  tech: [
+    { name: "Next.js + TypeScript", why: "One codebase for the interface and the API, with typed contracts between them." },
+    { name: "PostgreSQL", why: "Users, monitors, snapshots, changes, sections, runs and notifications as proper relations." },
+    { name: "Queue and worker", why: "Fetching and diffing happen outside the request cycle, on a schedule, with retries." },
+    { name: "Cheerio and Readability", why: "Turning a full page into the document a person would actually read." },
+    { name: "Diff engine", why: "Section aware comparison that produces added, removed and modified blocks." },
+  ],
+  enables: [
+    "Monitoring any public document or page and knowing exactly what changed.",
+    "Products that fetch on a user's behalf without becoming a proxy into your own network.",
+    "Interfaces where a machine summary has to sit honestly next to the underlying evidence.",
+  ],
+  links: [{ label: "Open PolicyWatch", href: "https://policywatch.sadman.tech/", note: "Live application" }],
+  next: "scamlens",
+};

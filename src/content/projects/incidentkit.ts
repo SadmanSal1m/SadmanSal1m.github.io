@@ -1,0 +1,80 @@
+import type { Project } from "./types";
+
+export const incidentkit: Project = {
+  slug: "incidentkit",
+  station: "Respond",
+  index: "07",
+  name: "IncidentKit",
+  title: "IncidentKit Website",
+  promise: "An incident management platform for engineering teams: declare, coordinate, keep a timeline, publish a status page and write the postmortem from the record.",
+  category: "Web application · SaaS · multi tenant",
+  role: "Product, data model, RBAC, frontend and backend, end to end",
+  platform: "Web · Next.js · PostgreSQL · organisations, roles and a public status page",
+  tags: ["Multi tenant organisations", "Role based access", "Typed timeline events", "Internal and public boundary", "Postmortems from the record"],
+  takeaway: "Relevant for SaaS products, operational tools, anything with organisations and roles, audit logs, state machines and public views over private data.",
+  heroShot: "incidentkit/01-landing",
+  heroAlt: "IncidentKit landing page: the headline When production breaks, everyone looks at one page, a short description, and three principle cards.",
+  atAGlance: {
+    problem: "During an outage the facts scatter across chat, documents and tickets. Afterwards someone has to reconstruct when it started, who noticed, when the cause was found, what was deployed and when service recovered.",
+    contribution: "The whole product: organisations with owner, admin, responder and viewer roles; services with health states; incidents with severity and a lifecycle from declared to postmortem; a timeline of typed events with occurred at and recorded at kept apart; responders and incident roles; internal notes separated from customer updates by design; a public status page built from its own query; action items; postmortems generated from the record; and an audit log of the changes that matter.",
+    stack: ["Next.js", "TypeScript", "PostgreSQL", "RBAC", "Server rendered public status page", "Draft only AI postmortems"],
+    proof: "Every organisation's data is scoped at the query level, internal notes and customer updates are separate records, and the public status page reads public fields only, so an internal note cannot reach it by accident.",
+  },
+  context: [
+    "IncidentKit gives a team one authoritative incident record: INC number, severity, status, duration, responders, affected services, timeline, updates, action items, and later the postmortem.",
+    "The rule that shaped it: internal incident information must never accidentally become public. The line between collaboration and customer communication is treated as a security boundary, not a display setting.",
+  ],
+  challenge: [
+    "Multi tenancy has to be enforced in every backend query, never by hiding things in the interface. A user from one organisation requesting another organisation's incident gets a not found, every time.",
+    "Timelines are only useful if their order can be trusted. Responders' clocks disagree, and people record events after the fact, so occurred at and recorded at are separate and the server is authoritative for creation time.",
+  ],
+  journey: [
+    { media: "incidentkit/01-landing", alt: "IncidentKit landing page with the headline When production breaks, everyone looks at one page and a call to action.", caption: "One page for the whole incident: the promise, and the reason the product exists." },
+    { media: "incidentkit/02-principles", alt: "Lower landing page with three principle cards about the public boundary, the timeline as the record, and the postmortem written from it.", caption: "The principles on the landing page are the ones enforced in code: the public boundary, the timeline as the record, the postmortem from the record." },
+    { media: "incidentkit/03-sign-in", alt: "Sign in page with email and password fields and a note about demo accounts.", caption: "Sign in; organisations, roles and memberships decide what you can see and do from here on." },
+    { media: "incidentkit/04-dashboard", alt: "Organisation dashboard for Acme listing services such as Website, Authentication, Payments and Database with their health states, tabs for incidents, postmortems, actions and members.", caption: "The organisation: services and their health, incidents, postmortems, action items and members, all scoped to one tenant." },
+  ],
+  built: [
+    { lane: "Tenancy and access", items: ["Organisations with memberships and roles: owner, admin, responder, viewer", "Every query bounded by organisation", "Permission matrix enforced on the server", "Audit log for severity, status, responder, communication and role changes"] },
+    { lane: "Incidents", items: ["Declare in seconds: title, severity, services, description, commander", "Lifecycle: declared, investigating, identified, mitigating, monitoring, resolved, postmortem", "Typed timeline events with occurred at and recorded at", "Responders with incident roles: commander, technical lead, communications, scribe", "Services with operational, degraded, partial and major outage states"] },
+    { lane: "Communication", items: ["Internal notes and customer updates as separate models", "Public status page from a dedicated public query", "Published updates only ever appear publicly", "In app and email notifications"] },
+    { lane: "Learning", items: ["Action items with owners, due dates and status across incidents", "Postmortem editor: summary, impact, detection, timeline, cause, resolution, lessons, actions", "AI drafted postmortem from the structured record, marked as a draft", "Metrics: time to acknowledge, identify and resolve"] },
+  ],
+  decisions: [
+    { title: "Two models, not one flag", body: "Internal updates and customer updates are different records. The public status page is built from its own query over public fields, never by serialising an incident and stripping properties.", tradeoff: "More tables and DTOs, in exchange for a boundary that cannot be crossed by forgetting a filter." },
+    { title: "Occurred at versus recorded at", body: "An event can be logged at 14:42 for something that happened at 14:26. Both times are kept; the timeline orders by occurred at and the server sets recorded at.", tradeoff: "Slightly more to explain in the interface; a much more honest record for the postmortem." },
+    { title: "Server side permissions, not hidden buttons", body: "The role matrix is enforced on every mutation on the server. Hiding a button in the interface is a courtesy, never the control.", tradeoff: "Every action needs a permission check even when the interface would never show it; that is the cost of being able to trust the boundary." },
+  ],
+  underTheHood: "A modular monolith: a Next.js interface and API over PostgreSQL, with an event service writing timeline and audit entries in the same transaction as the mutation they describe, a notification service, and a separate public read path for the status page.",
+  deepDetail: [
+    "Audit entries are written with important mutations rather than after them, so the log cannot drift from the data.",
+    "Timeline events are idempotent to create, so retries do not produce duplicates.",
+    "The postmortem assistant receives only structured fields and notes approved for it, and its output is a draft the author must edit.",
+  ],
+  gallery: [
+    { media: "incidentkit/01-landing", alt: "IncidentKit landing page.", caption: "The landing page." },
+    { media: "incidentkit/02-principles", alt: "Principles section of the landing page.", caption: "The principles enforced in code." },
+    { media: "incidentkit/03-sign-in", alt: "Sign in page.", caption: "Sign in, then roles decide the rest." },
+    { media: "incidentkit/04-dashboard", alt: "Organisation dashboard with services and health states.", caption: "The organisation dashboard." },
+  ],
+  quality: [
+    "Tenant isolation enforced in every query; cross organisation requests return not found.",
+    "Role based access checked on the server for every mutation; viewers cannot change incidents.",
+    "The public status endpoint is built from public fields only, never by serialising an incident and stripping properties.",
+    "Audit log entries are not editable by ordinary users and are written in the same transaction as the change.",
+  ],
+  proofNow: ["Built with organisations, services and their health states, incidents, postmortems, action items and members, as the dashboard shows.", "The AI postmortem assistant only drafts from the structured record and is marked as a draft."],
+  tech: [
+    { name: "Next.js + TypeScript", why: "Server rendered interface and API with typed data contracts." },
+    { name: "PostgreSQL", why: "Organisations, memberships, services, incidents, events, updates, actions, postmortems and audit entries as relations with real constraints." },
+    { name: "RBAC", why: "A permission matrix enforced on the server, not in the interface." },
+    { name: "Separate public read path", why: "The status page can only ever see what was published." },
+  ],
+  enables: [
+    "SaaS products with organisations, roles and audit requirements.",
+    "Operational tools where a trustworthy record matters more than chat.",
+    "Public views over private data without leaks.",
+  ],
+  links: [],
+  next: "dentxpert",
+};
